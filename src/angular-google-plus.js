@@ -66,7 +66,6 @@ angular.module('googleplus', []).
      */
     this.init = function(customOptions) {
       angular.extend(options, customOptions);
-      gapi.auth2.init(options);
     };
 
     /**

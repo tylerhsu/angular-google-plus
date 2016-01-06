@@ -51,7 +51,6 @@ angular.module("googleplus", []).provider("GooglePlus", [ function() {
      */
     this.init = function(b) {
         angular.extend(a, b);
-        gapi.auth2.init(a);
     };
     /**
      * Make sign-in server side
