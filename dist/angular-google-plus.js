@@ -1,4 +1,4 @@
-/*! angular-google-plus - v0.1.3 2016-01-06 */
+/*! angular-google-plus - v0.1.3 2016-02-01 */
 /**
  * googleplus module
  */
@@ -75,39 +75,31 @@ angular.module("googleplus", []).provider("GooglePlus", [ function() {
        * @type {gapi.auth2.GoogleAuth}
        */
         var c = null;
+        gapi.load("auth2", function() {
+            c = gapi.auth2.init(a);
+        });
         /**
        * NgGooglePlus Class
        * @type {Class}
        */
         var d = function() {};
         d.prototype.ready = function() {
-            var d = b.defer();
-            gapi.load("auth2", function() {
-                if (!c) {
-                    c = gapi.auth2.init(a);
-                }
-                c.then(function() {
-                    d.resolve();
-                });
+            var a = b.defer();
+            c.then(function() {
+                a.resolve();
             });
-            return d.promise;
+            return a.promise;
         };
         d.prototype.login = function() {
-            return this.ready().then(function() {
-                return c.signIn();
-            }).then(function(a) {
+            return c.signIn().then(function(a) {
                 return a.getAuthResponse();
             });
         };
         d.prototype.getUser = function() {
-            return this.ready().then(function() {
-                return c.currentUser;
-            });
+            return c.currentUser;
         };
         d.prototype.logout = function() {
-            return this.ready().then(function() {
-                return c.signOut();
-            });
+            return c.signOut();
         };
         return new d();
     } ];

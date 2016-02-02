@@ -94,6 +94,9 @@ angular.module('googleplus', []).
        * @type {gapi.auth2.GoogleAuth}
        */
       var gAuth = null;
+      gapi.load('auth2',function(){
+        gAuth = gapi.auth2.init(options);
+      });
 
       /**
        * NgGooglePlus Class
@@ -101,41 +104,28 @@ angular.module('googleplus', []).
        */
       var NgGooglePlus = function () {};
 
-      NgGooglePlus.prototype.ready = function(){
+      NgGooglePlus.prototype.ready = function() {
         var deferred = $q.defer();
-        
-        gapi.load('auth2',function(){
-          if(!gAuth){
-            gAuth = gapi.auth2.init(options);
-          }
-          gAuth.then(function(){
-            deferred.resolve();
-          });
+
+        gAuth.then(function(){
+          deferred.resolve();
         });
 
         return deferred.promise;
       };
 
       NgGooglePlus.prototype.login =  function () {
-        return this.ready()
-          .then(function(){ 
-            return gAuth.signIn();
-          })
-          .then(function(gUser){
+          return gAuth.signIn().then(function(gUser){
             return gUser.getAuthResponse();
           });
       };
 
       NgGooglePlus.prototype.getUser = function() {
-        return this.ready().then(function(){ 
-          return gAuth.currentUser;
-        });
+        return gAuth.currentUser;
       };
 
       NgGooglePlus.prototype.logout =  function () {
-        return this.ready().then(function(){ 
-          return gAuth.signOut();
-        });
+        return gAuth.signOut();
       };
 
       return new NgGooglePlus();
