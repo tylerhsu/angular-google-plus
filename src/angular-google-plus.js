@@ -97,22 +97,27 @@ app.provider('GooglePlus', [function() {
   /**
    * This defines the Google Plus Service on run.
    */
-  this.$get = ['$q','gaLoad', function($q, gaLoad) {
+  this.$get = ['$q', '$window', 'gaLoad', function($q, $window, gaLoad) {
 
-    gaLoad.getScript().onload = function(){
+    var gAuth = null;
+    function loadAuth2(){
       /**
       * GoogleAuth
       * @type {gapi.auth2.GoogleAuth}
       **/
-      gapi.load('auth2',function(){
-        gAuth = gapi.auth2.init(options);
+      $window.gapi.load("auth2", function() {
+          gAuth = gapi.auth2.init(options);
       });
-    };
+    }
+
+    if($window.gapi) loadAuth2();
+    else gaLoad.getScript().onload = loadAuth2;
 
     /**
-     * NgGooglePlus Class
-     * @type {Class}
-     */
+    * NgGooglePlus Class
+    * @type {Class}
+    */
+   
     var NgGooglePlus = function () {};
 
     NgGooglePlus.prototype.ready = function() {
@@ -142,10 +147,10 @@ app.provider('GooglePlus', [function() {
     return new NgGooglePlus();
   }];
 
-}]);
+}])
 
 // Initialization of module
-app.run(['gaLoad', function(gaLoad) {
+.run(['gaLoad', function(gaLoad) {
   var po = document.createElement('script');
   po.type = 'text/javascript';
   po.async = true;

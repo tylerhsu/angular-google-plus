@@ -1,4 +1,4 @@
-/*! angular-google-plus - v0.1.3 2016-02-03 */
+/*! angular-google-plus - v0.2.4 2016-02-03 */
 /**
  * googleplus module
  */
@@ -86,45 +86,44 @@ app.provider("GooglePlus", [ function() {
     /**
    * This defines the Google Plus Service on run.
    */
-    this.$get = [ "$q", "gaLoad", function(b, c) {
-        c.getScript().onload = function() {
+    this.$get = [ "$q", "$window", "gaLoad", function(b, c, d) {
+        var e = null;
+        function f() {
             /**
       * GoogleAuth
       * @type {gapi.auth2.GoogleAuth}
       **/
-            gapi.load("auth2", function() {
-                gAuth = gapi.auth2.init(a);
+            c.gapi.load("auth2", function() {
+                e = gapi.auth2.init(a);
             });
-        };
+        }
+        if (c.gapi) f(); else d.getScript().onload = f;
         /**
-     * NgGooglePlus Class
-     * @type {Class}
-     */
-        var d = function() {};
-        d.prototype.ready = function() {
+    * NgGooglePlus Class
+    * @type {Class}
+    */
+        var g = function() {};
+        g.prototype.ready = function() {
             var a = b.defer();
-            gAuth.then(function() {
+            e.then(function() {
                 a.resolve();
             });
             return a.promise;
         };
-        d.prototype.login = function() {
-            return gAuth.signIn().then(function(a) {
+        g.prototype.login = function() {
+            return e.signIn().then(function(a) {
                 return a.getAuthResponse();
             });
         };
-        d.prototype.getUser = function() {
-            return gAuth.currentUser;
+        g.prototype.getUser = function() {
+            return e.currentUser;
         };
-        d.prototype.logout = function() {
-            return gAuth.signOut();
+        g.prototype.logout = function() {
+            return e.signOut();
         };
-        return new d();
+        return new g();
     } ];
-} ]);
-
-// Initialization of module
-app.run([ "gaLoad", function(a) {
+} ]).run([ "gaLoad", function(a) {
     var b = document.createElement("script");
     b.type = "text/javascript";
     b.async = true;
