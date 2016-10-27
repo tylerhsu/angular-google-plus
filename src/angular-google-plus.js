@@ -4,6 +4,10 @@
  */
 var app = angular.module('googleplus', []);
 
+var loadScript = true;
+
+var scriptUrl = 'https://apis.google.com/js/platform.js';
+
 app.service('gaLoad', [function(){
 
   var script;
@@ -94,11 +98,18 @@ app.provider('GooglePlus', [function() {
     delete options.responseType;
   };
 
+  this.setLoadScript = function(val) {
+    loadScript = !!val;
+  };
+
+  this.getLoadScript = function() {
+    return !!loadScript;
+  };
+
   /**
    * This defines the Google Plus Service on run.
    */
   this.$get = ['$q', '$window', 'gaLoad', function($q, $window, gaLoad) {
-
     var gAuth = null;
     function loadAuth2(){
       /**
@@ -131,9 +142,9 @@ app.provider('GooglePlus', [function() {
     };
 
     NgGooglePlus.prototype.login =  function () {
-        return gAuth.signIn().then(function(gUser){
-          return gUser.getAuthResponse();
-        });
+      return gAuth.signIn().then(function(gUser){
+        return gUser.getAuthResponse();
+      });
     };
 
     NgGooglePlus.prototype.getUser = function() {
@@ -142,6 +153,10 @@ app.provider('GooglePlus', [function() {
 
     NgGooglePlus.prototype.logout =  function () {
       return gAuth.signOut();
+    };
+
+    NgGooglePlus.prototype.loadScript = function() {
+      gaLoad.getScript().src = scriptUrl;
     };
 
     return new NgGooglePlus();
@@ -154,8 +169,11 @@ app.provider('GooglePlus', [function() {
   var po = document.createElement('script');
   po.type = 'text/javascript';
   po.async = true;
-  po.src = 'https://apis.google.com/js/platform.js';
   var s = document.getElementsByTagName('script')[0];
   s.parentNode.insertBefore(po, s);
   gaLoad.setScript(po);
+
+  if (loadScript) {
+    po.src = scriptUrl;
+  }
 }]);

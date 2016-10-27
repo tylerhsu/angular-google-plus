@@ -1,8 +1,12 @@
-/*! angular-google-plus - v0.2.4 2016-02-03 */
+/*! angular-google-plus - v0.2.5 2016-10-27 */
 /**
  * googleplus module
  */
 var app = angular.module("googleplus", []);
+
+var loadScript = true;
+
+var scriptUrl = "https://apis.google.com/js/platform.js";
 
 app.service("gaLoad", [ function() {
     var a;
@@ -83,6 +87,12 @@ app.provider("GooglePlus", [ function() {
         delete a.accessType;
         delete a.responseType;
     };
+    this.setLoadScript = function(a) {
+        loadScript = !!a;
+    };
+    this.getLoadScript = function() {
+        return !!loadScript;
+    };
     /**
    * This defines the Google Plus Service on run.
    */
@@ -121,14 +131,19 @@ app.provider("GooglePlus", [ function() {
         g.prototype.logout = function() {
             return e.signOut();
         };
+        g.prototype.loadScript = function() {
+            d.getScript().src = scriptUrl;
+        };
         return new g();
     } ];
 } ]).run([ "gaLoad", function(a) {
     var b = document.createElement("script");
     b.type = "text/javascript";
     b.async = true;
-    b.src = "https://apis.google.com/js/platform.js";
     var c = document.getElementsByTagName("script")[0];
     c.parentNode.insertBefore(b, c);
     a.setScript(b);
+    if (loadScript) {
+        b.src = scriptUrl;
+    }
 } ]);
